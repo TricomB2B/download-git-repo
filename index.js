@@ -29,13 +29,13 @@ function download (repo, dest, opts) {
     let url = getUrl(repo, clone);
 
     if (clone) {
-      gitclone(url, dest, { checkout: repo.checkout }, function(err) {
+      gitclone(url, dest, { checkout: repo.checkout }, (err) => {
         if (err === undefined) {
           rm(dest + "/.git");
           resolve();
         }
         else {
-          reject(err);
+          reject(new Error(`Could not find repository at ${url} or branch ${repo.checkout} could not be found.`));
         }
       });
     }
@@ -44,7 +44,8 @@ function download (repo, dest, opts) {
         .get(url)
         .dest(dest)
         .run((err, files) => {
-          err === null ? resolve() : reject(err);
+          if (err) reject(new Error(`Could not find repository at ${url}.`));
+          resolve();
         });
     }
   });
