@@ -1,9 +1,9 @@
 {
   "name": "download-git-repo",
-  "version": "0.2.1",
+  "version": "0.0.1",
   "license": "MIT",
-  "repository": "git://github.com/flipxfx/download-git-repo",
-  "description": "Download and extract a git repository (GitHub, GitLab, Bitbucket) from node.",
+  "repository": "git://github.com/TricomB2B/download-git-repo",
+  "description": "Download and extract a git repository (GitHub, GitLab, Bitbucket) from node. Customzied to utilize a Promise-based syntax instead of callbacks.",
   "keywords": [
     "download",
     "github",

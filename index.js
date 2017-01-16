@@ -10,39 +10,44 @@ module.exports = download;
 
 /**
  * Download `repo` to `dest` and callback `fn(err)`.
+ * Changes by Todd Miller <todd.miller@tricomb2b.com>
+ * Modified the function to work with Promises instead of
+ * the outdated callback methodology. This allows it to work
+ * a bit smoother with Yeoman Generators.
  *
  * @param {String} repo
  * @param {String} dest
  * @param {Function} fn
  */
 
-function download(repo, dest, opts, fn) {
-  if (typeof opts === "function") {
-    fn = opts;
-    opts = null;
-  }
-  opts = opts || {};
-  var clone = opts.clone || false;
+function download (repo, dest, opts) {
+  return new Promise((resolve, reject) => {
+    opts = opts || {};
+    let clone = opts.clone || false;
 
-  repo = normalize(repo);
-  var url = getUrl(repo, clone);
+    repo = normalize(repo);
+    let url = getUrl(repo, clone);
 
-  if (clone) {
-    gitclone(url, dest, { checkout: repo.checkout }, function(err) {
-      if (err === undefined) {
-        rm(dest + "/.git");
-        fn();
-      }
-      else {
-        fn(err);
-      }
-    });
-  }
-  else {
-    new Download({ mode: "666", extract: true, strip: 1 }).get(url).dest(dest).run(function(err, files) {
-      err === null ? fn() : fn(err);
-    });
-  }
+    if (clone) {
+      gitclone(url, dest, { checkout: repo.checkout }, function(err) {
+        if (err === undefined) {
+          rm(dest + "/.git");
+          resolve();
+        }
+        else {
+          reject(err);
+        }
+      });
+    }
+    else {
+      new Download({ mode: "666", extract: true, strip: 1 })
+        .get(url)
+        .dest(dest)
+        .run((err, files) => {
+          err === null ? resolve() : reject(err);
+        });
+    }
+  });
 }
 
 /**
